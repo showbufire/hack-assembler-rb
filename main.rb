@@ -1,6 +1,8 @@
-require './lexer.rb';
+require './lexer.rb'
+require './parser.rb'
 
 lexer = Lexer.new
-lexer.lex_file 'Add.asm' do |result|
-  p result
+parser = Parser.new
+lexer.lex_file('../add/Add.asm').each do |tokens|
+  p parser.parse(tokens)
 end

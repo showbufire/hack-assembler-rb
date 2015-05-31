@@ -1,20 +1,23 @@
 ##
 ## symbols:
 ## @ ; ( ) = - + ! & |
-## label: char+(char | number | _ | . | $)*
+## symbol: char+(char | number | _ | . | $)*
 ## int: number+
 ##
 
 require 'strscan'
+require './token.rb'
 
 class Lexer
   def lex_file(path)
+    ret = []
     File.open(path, "r") do |file|
       while (line = file.gets)
-        token = lex_line(line)
-        yield token unless token.empty?
+        tokens = lex_line(line)
+        ret << tokens unless tokens.empty?
       end
     end
+    ret
   end
 
   def lex_line(line)
@@ -70,61 +73,12 @@ class Lexer
 
       y = s.scan(/[[:alpha:]]+(\w|\.|$)*/)
       if y != nil
-        ret << TokenLabel.new(y)
+        ret << TokenSymbol.new(y)
         next
       end
 
       raise "unable to lex #{line}"
     end
     ret
-  end
-end
-
-class Token
-end
-
-class TokenAt < Token
-end
-
-class TokenSemiColon < Token
-end
-
-class TokenLeftParen < Token
-end
-
-class TokenRightParen < Token
-end
-
-class TokenAssign < Token
-end
-
-class TokenMinus < Token
-end
-
-class TokenAdd < Token
-end
-
-class TokenNot < Token
-end
-
-class TokenAnd < Token
-end
-
-class TokenOr < Token
-end
-
-class TokenLabel < Token
-  attr_reader :label
-  
-  def initialize(label)
-    @label = label
-  end
-end
-
-class TokenNumber < Token
-  attr_reader :value
-
-  def initialize(value)
-    @value = value
   end
 end
