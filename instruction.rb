@@ -1,3 +1,5 @@
+require './token.rb'
+
 class Instruction
 end
 
@@ -5,7 +7,7 @@ class AInstruction < Instruction
   attr_reader :addr
   
   def initialize(addr)
-    @addr_token = addr
+    @addr = addr
   end
 end
 
