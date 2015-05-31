@@ -20,58 +20,49 @@ class CInstruction
 
   def comp_bits
     a_bit = b2s(comp_tokens.any? {|x| x.is_msym?})
-    c = case comp_tokens.length
-        when 1
-          comp_single_token
-        when 2
-          comp_double_tokens
-        when 3
-          comp_triple_tokens
-        else
-          raise "comp tokens number is not 1 or 2 or 3 at line #{lineno}}"
-        end
-    "#{a_bit}#{c}"
-  end
-
-  def comp_single_token
-    token = comp_tokens.first
-    if token.is_a? TokenNumber
-      if token.number == 0 then "101010" else "111111" end
-    else
-      if token.is_dsym? then "001100" else "110000" end
-    end
-  end
-
-  def comp_double_tokens
-    token = comp_tokens.last
-    if comp_tokens.first.is_a? TokenNot
-      if token.is_dsym? then "001101" else "110001" end
-    else
-      if token.is_a? TokenNumber
-        "111010"
-      else
-        if token.is_dsym? then "001111" else "110011" end
-      end
-    end
-  end
-
-  def comp_triple_tokens
-    mid = comp_tokens[1]
-    return "000000" if mid.is_a? TokenAnd #D&A
-    return "010101" if mid.is_a? TokenOr #D|A
-    if mid.is_a? TokenAdd
-      return "110111" if comp_tokens.first.symbol != "D"  #A+1
-      return "011111" if comp_tokens.last.is_a? TokenNumber #D+1
-      return "000010" #D+A
-    else
-      if comp_tokens.first.is_dsym?
-        return "001110" if comp_tokens.last.is_a? TokenNumber #D-1
-        return "010011" #D-A
-      else
-        return "110010" if comp_tokens.last.is_a? TokenNumber #A-1
-        return "000111" #A-D
-      end
-    end
+    rc = if a_bit == "1" then "M" else "A" end
+    st = comp_tokens.map{|x| x.value}.join
+    c_bits = case st
+             when "0"
+               "101010"
+             when "1"
+               "111111"
+             when "-1"
+               "111010"
+             when "D"
+               "001100"
+             when rc
+               "110000"
+             when "!D"
+               "001101"
+             when "!#{rc}"
+               "110001"
+             when "-D"
+               "001111"
+             when "-#{rc}"
+               "110011"
+             when "D+1"
+               "011111"
+             when "#{rc}+1"
+               "110111"
+             when "D-1"
+               "001110"
+             when "#{rc}-1"
+               "110010"
+             when "D+#{rc}"
+               "000010"
+             when "D-#{rc}"
+               "010011"
+             when "#{rc}-D"
+               "000111"
+             when "D&#{rc}"
+               "000000"
+             when "D|#{rc}"
+               "010101"
+             else
+               raise "error translating comp_bits for #{st}"
+             end
+    "#{a_bit}#{c_bits}"
   end
 
   def dest_bits

@@ -1,6 +1,9 @@
 require './token.rb'
 
 class Instruction
+  def to_s
+    "#{self.class} @#{lineno}"
+  end
 end
 
 class AInstruction < Instruction
@@ -12,10 +15,6 @@ class AInstruction < Instruction
 
   def lineno
     @addr.lineno
-  end
-
-  def to_s
-    "AInstruction at line #{lineno}"
   end
 end
 
@@ -31,10 +30,6 @@ class CInstruction < Instruction
   def lineno
     @comp_tokens[0].lineno if @comp_tokens.length > 0
   end
-
-  def to_s
-    "CInstruction at line #{lineno}"
-  end
 end
 
 class LabelInstruction < Instruction
@@ -42,5 +37,9 @@ class LabelInstruction < Instruction
   
   def initialize(label)
     @label = label
+  end
+
+  def lineno
+    @label.lineno
   end
 end
