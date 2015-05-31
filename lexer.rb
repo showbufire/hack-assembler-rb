@@ -73,7 +73,7 @@ class Lexer
         next
       end
 
-      y = s.scan(/[[:alpha:]]+(\w|\.|$)*/)
+      y = s.scan(/[[:alpha:]]+(\w|\.|\$)*/)
       if y != nil
         ret << TokenSymbol.new(y, lineno)
         next

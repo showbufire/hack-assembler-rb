@@ -60,7 +60,7 @@ class CInstruction
     return "000000" if mid.is_a? TokenAnd #D&A
     return "010101" if mid.is_a? TokenOr #D|A
     if mid.is_a? TokenAdd
-      return "110111" if comp_tokens.first.symbol == "A"  #A+1
+      return "110111" if comp_tokens.first.symbol != "D"  #A+1
       return "011111" if comp_tokens.last.is_a? TokenNumber #D+1
       return "000010" #D+A
     else
