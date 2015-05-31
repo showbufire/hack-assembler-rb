@@ -3,6 +3,18 @@ class Token
   def initialize(lineno)
     @lineno = lineno
   end
+
+  def is_msym?
+    false
+  end
+
+  def is_asym?
+    false
+  end
+
+  def is_dsym?
+    false
+  end
 end
 
 class TokenAt < Token
@@ -45,6 +57,18 @@ class TokenSymbol < Token
 
   def to_s
     "Symbol: #{@symbol}"
+  end
+
+  def is_dsym?
+    symbol == "D"
+  end
+
+  def is_asym?
+    symbol == "A"
+  end
+
+  def is_msym?
+    symbol == "M"
   end
 end
 

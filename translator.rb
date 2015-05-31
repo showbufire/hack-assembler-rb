@@ -19,7 +19,7 @@ class CInstruction
   end
 
   def comp_bits
-    a_bit = b2s(comp_tokens.any? {|x| x.is_a?(TokenSymbol) && x.symbol == "M"})
+    a_bit = b2s(comp_tokens.any? {|x| x.is_msym?})
     c = case comp_tokens.length
         when 1
           comp_single_token
@@ -38,19 +38,19 @@ class CInstruction
     if token.is_a? TokenNumber
       if token.number == 0 then "101010" else "111111" end
     else
-      if token.symbol == "D" then "001100" else "110000" end
+      if token.is_dsym? then "001100" else "110000" end
     end
   end
 
   def comp_double_tokens
     token = comp_tokens.last
     if comp_tokens.first.is_a? TokenNot
-      if token.symbol == "D" then "001101" else "110001" end
+      if token.is_dsym? then "001101" else "110001" end
     else
       if token.is_a? TokenNumber
         "111010"
       else
-        if token.symbol == "D" then "001111" else "110011" end
+        if token.is_dsym? then "001111" else "110011" end
       end
     end
   end
@@ -64,7 +64,7 @@ class CInstruction
       return "011111" if comp_tokens.last.is_a? TokenNumber #D+1
       return "000010" #D+A
     else
-      if comp_tokens.first.symbol == "D"
+      if comp_tokens.first.is_dsym?
         return "001110" if comp_tokens.last.is_a? TokenNumber #D-1
         return "010011" #D-A
       else
