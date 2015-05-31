@@ -28,7 +28,7 @@ class CInstruction
         when 3
           comp_triple_tokens
         else
-          raise "comp tokens number larger than 3"
+          raise "comp tokens number is not 1 or 2 or 3 at line #{lineno}}"
         end
     "#{a_bit}#{c}"
   end
@@ -88,9 +88,8 @@ class CInstruction
   end
 
   def jump_bits
-    case jump_symbol
-    when nil
-      "000"
+    return "000" if jump_symbol.nil?
+    case jump_symbol.symbol
     when "JGT"
       "001"
     when "JEQ"
@@ -105,14 +104,27 @@ class CInstruction
       "110"
     when "JMP"
       "111"
+    else
+      raise "unknow jump symbol #{jump_symbol.symbol}"
     end
   end
 end
 
 class Translator
 
+  attr_reader :symbol_table
+
   def init
-    @symbol_table = {}
+    @symbol_table = {
+      "SP" => 0,
+      "LCL" => 1,
+      "ARG" => 2,
+      "THIS" => 3,
+      "THAT" => 4,
+      "SCREEN" => 16384,
+      "KBD" => 24576
+    }
+    0.upto(15).each {|x| @symbol_table["R#{x}"]=x}
   end
 
   def translate(instructions)
@@ -126,7 +138,7 @@ class Translator
     idx_without = 0
     instructions.each do |ins|
       if ins.is_a? LabelInstruction
-        @symbol_table[ins.label] = idx_without + 1
+        @symbol_table[ins.label.symbol] = idx_without
       else
         idx_without += 1
       end
@@ -138,7 +150,7 @@ class Translator
     instructions.each do |ins|
       if ins.is_a?(AInstruction) && ins.addr.is_a?(TokenSymbol)
         symbol = ins.addr.symbol
-        unless @symbol_table.includes? symbol
+        unless @symbol_table.include?(symbol)
           @symbol_table[symbol] = idx
           idx += 1
         end

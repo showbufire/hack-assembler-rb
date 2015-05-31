@@ -12,68 +12,70 @@ class Lexer
   def lex_file(path)
     ret = []
     File.open(path, "r") do |file|
+      lineno = 1
       while (line = file.gets)
-        tokens = lex_line(line)
+        tokens = lex_line(line, lineno)
         ret << tokens unless tokens.empty?
+        lineno += 1
       end
     end
     ret
   end
 
-  def lex_line(line)
+  def lex_line(line, lineno)
     s = StringScanner.new line
     ret = []
     while !s.eos? && !s.scan(/\/\//) && !s.scan(/\n/)
       next if s.scan(/\s+/)
       if s.scan(/@/)
-        ret << TokenAt.new
+        ret << TokenAt.new(lineno)
         next
       end
       if s.scan(/;/)
-        ret << TokenSemiColon.new
+        ret << TokenSemiColon.new(lineno)
         next
       end
       if s.scan(/\(/)
-        ret << TokenLeftParen.new
+        ret << TokenLeftParen.new(lineno) 
         next
       end
       if s.scan(/\)/)
-        ret << TokenRightParen.new
+        ret << TokenRightParen.new(lineno)
         next
       end
       if s.scan(/=/)
-        ret << TokenAssign.new
+        ret << TokenAssign.new(lineno)
         next
       end
       if s.scan(/-/)
-        ret << TokenMinus.new
+        ret << TokenMinus.new(lineno)
         next
       end
       if s.scan(/\+/)
-        ret << TokenAdd.new
+        ret << TokenAdd.new(lineno)
         next
       end
       if s.scan(/!/)
-        ret << TokenNot.new
+        ret << TokenNot.new(lineno)
         next
       end
       if s.scan(/&/)
-        ret << TokenAnd.new
+        ret << TokenAnd.new(lineno)
         next
       end
       if s.scan(/\|/)
-        ret << TokenOr.new
+        ret << TokenOr.new(lineno)
         next
       end
       x = s.scan(/\d+/)
       if x != nil
-        ret << TokenNumber.new(x.to_i)
+        ret << TokenNumber.new(x.to_i, lineno)
         next
       end
 
       y = s.scan(/[[:alpha:]]+(\w|\.|$)*/)
       if y != nil
-        ret << TokenSymbol.new(y)
+        ret << TokenSymbol.new(y, lineno)
         next
       end
 

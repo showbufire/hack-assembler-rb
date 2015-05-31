@@ -8,8 +8,8 @@ class Parser
       return AInstruction.new(tokens.last)
     end
     if tokens.first.is_a? TokenLeftParen
-      error(tokens) unless tokens.lenght = 3;
-      return LabelInstruction.new(token[1]);
+      error(tokens) unless tokens.length == 3;
+      return LabelInstruction.new(tokens[1]);
     end
 
     parse_cinstruction(tokens)
@@ -30,8 +30,8 @@ class Parser
       end_idx = tokens.length - 3;
     end
     
-    error(tokens) unless start_idx <= end_idx
-    CInstruction.new dest_symbol, tokens[start_idx, end_idx], jump_symbol
+    error(tokens) if start_idx > end_idx
+    CInstruction.new(dest_symbol, tokens[start_idx, end_idx - start_idx + 1], jump_symbol)
   end
 
   def error(tokens)

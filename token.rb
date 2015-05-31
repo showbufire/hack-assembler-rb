@@ -1,4 +1,8 @@
 class Token
+  attr_reader :lineno
+  def initialize(lineno)
+    @lineno = lineno
+  end
 end
 
 class TokenAt < Token
@@ -34,15 +38,25 @@ end
 class TokenSymbol < Token
   attr_reader :symbol
   
-  def initialize(symbol)
+  def initialize(symbol, lineno)
+    super(lineno)
     @symbol = symbol
+  end
+
+  def to_s
+    "Symbol: #{@symbol}"
   end
 end
 
 class TokenNumber < Token
   attr_reader :number
 
-  def initialize(number)
+  def initialize(number, lineno)
+    super(lineno)
     @number = number
+  end
+
+  def to_s
+    "Number: #{@number}"
   end
 end

@@ -9,6 +9,14 @@ class AInstruction < Instruction
   def initialize(addr)
     @addr = addr
   end
+
+  def lineno
+    @addr.lineno
+  end
+
+  def to_s
+    "AInstruction at line #{lineno}"
+  end
 end
 
 class CInstruction < Instruction
@@ -18,6 +26,14 @@ class CInstruction < Instruction
     @dest_symbol = dest_symbol
     @comp_tokens = comp_tokens
     @jump_symbol = jump_symbol
+  end
+
+  def lineno
+    @comp_tokens[0].lineno if @comp_tokens.length > 0
+  end
+
+  def to_s
+    "CInstruction at line #{lineno}"
   end
 end
 
