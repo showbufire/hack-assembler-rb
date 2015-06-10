@@ -1,22 +1,35 @@
+#!/usr/bin/env ruby
+
 require './lexer.rb'
 require './parser.rb'
 require './translator.rb'
 
+require 'slop'
+
+opts = Slop.parse do |o|
+  o.on '--help', '-h' do
+    puts o
+    exit
+  end
+  o.string '-f', '--file', 'path of .asm'
+  o.bool '-l', '--lexer', 'only lexer'
+  o.bool '-p', '--parser', 'only parser'
+end
+
+
 lexer = Lexer.new
-parser = Parser.new
-
-raise "please provide a file name" if ARGV.length < 1
-path = ARGV[0]
-option = ARGV[1]
-
+path = opts[:file]
 tokens_arr = lexer.lex_file(path)
-if option == "-l"
+
+if opts.lexer?
   tokens_arr.map {|tokens| puts tokens}
   exit
 end
 
+parser = Parser.new
 instructions = tokens_arr.map {|tokens| parser.parse(tokens)}
-if option == "-p"
+
+if opts.parser?
   instructions.map {|ins| puts ins}
   exit
 end
